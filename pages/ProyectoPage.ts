@@ -150,16 +150,12 @@ export class ProyectoPage {
     await expect(campo).toBeVisible();
     await expect(campo).toBeEditable();
 
-    await campo.fill('');
-
-    await campo.pressSequentially(fecha, {
-      delay: 50,
-    });
-
+    // Cargamos la fecha completa.
+    await campo.fill(fecha);
     await expect(campo).toHaveValue(fecha);
 
+    // Comprobamos que el formulario la conserve al salir.
     await campo.press('Tab');
-
     await expect(campo).toHaveValue(fecha);
   }
 
