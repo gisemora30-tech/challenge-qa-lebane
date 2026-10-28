@@ -1,0 +1,24 @@
+{
+  "name": "challenge-qa-lebane",
+  "version": "1.0.0",
+  "description": "Challenge QA Automation de Lebane con Playwright y TypeScript",
+  "main": "index.js",
+  "scripts": {
+    "test": "playwright test tests/proyecto.spec.ts tests/unidades.spec.ts tests/importacion.spec.ts tests/editar-precio.spec.ts tests/eliminar-unidad.spec.ts tests/eliminar-ultima-unidad.spec.ts",
+    "test:headed": "npm test -- --headed",
+    "test:report": "playwright show-report",
+    "prepare:import": "node scripts/preparar-importacion.cjs"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.5",
+    "exceljs": "^4.4.0"
+  },
+  "dependencies": {
+    "dotenv": "^18.0.9"
+  }
+}

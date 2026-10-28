@@ -1,0 +1,63 @@
+name: Lebane QA Automation
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: lebane-qa-${{ github.repository }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Casos de listas de precios
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Descargar el repositorio
+        uses: actions/checkout@v6
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: '24'
+          cache: npm
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Instalar Google Chrome y dependencias del sistema
+        run: npx playwright install --with-deps chrome
+
+      - name: Verificar que exista el Excel de importación
+        run: |
+          node -e "require('node:fs').accessSync('test-data/unidades-importacion.xlsx')"
+
+      - name: Ejecutar los siete escenarios del challenge
+        env:
+          CI: 'true'
+          LEBANE_EMAIL: ${{ secrets.LEBANE_EMAIL }}
+          LEBANE_PASSWORD: ${{ secrets.LEBANE_PASSWORD }}
+        run: >
+          npx playwright test
+          tests/proyecto.spec.ts
+          tests/unidades.spec.ts
+          tests/importacion.spec.ts
+          tests/editar-precio.spec.ts
+          tests/eliminar-unidad.spec.ts
+          tests/eliminar-ultima-unidad.spec.ts
+
+      - name: Guardar el reporte HTML
+        uses: actions/upload-artifact@v5
+        if: ${{ !cancelled() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
